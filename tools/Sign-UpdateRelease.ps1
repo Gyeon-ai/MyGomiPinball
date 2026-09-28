@@ -9,6 +9,9 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
+if ($PSVersionTable.PSEdition -ne 'Desktop') {
+    throw 'Run update signing with Windows PowerShell 5.1 (powershell.exe), not pwsh.'
+}
 Add-Type -AssemblyName System.Security
 
 $root = Split-Path -Parent $PSScriptRoot
@@ -79,7 +82,7 @@ foreach ($project in $projects) {
 }
 
 if (Test-Path -LiteralPath $manifestPath) {
-    $previous = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
+    $previous = Get-Content -LiteralPath $manifestPath -Raw -Encoding UTF8 | ConvertFrom-Json
     $sameRelease = $version -eq [Version]$previous.Version -and
         $previous.ProductId -ceq 'Gyeon-ai/MyGomiPinball' -and
         $previous.ReleaseNotes -ceq $ReleaseNotes.Trim() -and
