@@ -26,6 +26,11 @@ namespace MyGomiPinball
         {
             try
             {
+                if (SelfUpdater.TryHandleApplyMode(args, UpdateProduct.Standard))
+                {
+                    return;
+                }
+
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
                 Application.ThreadException += delegate(object sender, System.Threading.ThreadExceptionEventArgs e)
@@ -38,6 +43,11 @@ namespace MyGomiPinball
                     WriteCrashLog(e.ExceptionObject as Exception);
                 };
                 var mainForm = new MainForm();
+                mainForm.Shown += delegate
+                {
+                    SelfUpdater.SignalSuccessfulStartup(args);
+                    SelfUpdater.BeginUpdateCheck(mainForm, UpdateProduct.Standard);
+                };
                 Application.Run(mainForm);
             }
             catch (Exception ex)

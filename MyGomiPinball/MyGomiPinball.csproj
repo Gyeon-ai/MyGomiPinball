@@ -41,9 +41,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
+    <Compile Include="SelfUpdater.cs" />
+    <Compile Include="UpdateDialogs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="..\update-public-key.xml">
+      <LogicalName>MyGomiPinballUpdatePublicKey</LogicalName>
+    </EmbeddedResource>
     <EmbeddedResource Include="logo.png">
       <LogicalName>MyGomiPinballLogo</LogicalName>
     </EmbeddedResource>
