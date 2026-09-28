@@ -3,7 +3,9 @@ param(
     [ValidateNotNullOrEmpty()]
     [string]$ReleaseNotes,
 
-    [string]$SigningKeyPath = (Join-Path $env:LOCALAPPDATA 'Gyeona\TayoPinball\Signing\update-signing-key.dat')
+    [string]$SigningKeyPath = (Join-Path $env:LOCALAPPDATA 'Gyeona\TayoPinball\Signing\update-signing-key.dat'),
+
+    [switch]$ReSignCurrentVersion
 )
 
 $ErrorActionPreference = 'Stop'
@@ -78,7 +80,12 @@ foreach ($project in $projects) {
 
 if (Test-Path -LiteralPath $manifestPath) {
     $previous = Get-Content -LiteralPath $manifestPath -Raw | ConvertFrom-Json
-    if ($version -le [Version]$previous.Version) {
+    $sameRelease = $version -eq [Version]$previous.Version -and
+        $previous.ProductId -ceq 'Gyeon-ai/MyGomiPinball' -and
+        $previous.ReleaseNotes -ceq $ReleaseNotes.Trim() -and
+        $previous.Standard.Sha256 -ceq $releaseData['Standard'].Sha256 -and
+        $previous.Auto.Sha256 -ceq $releaseData['Auto'].Sha256
+    if ($version -le [Version]$previous.Version -and !($ReSignCurrentVersion -and $sameRelease)) {
         throw "Update version $version must exceed the existing manifest version."
     }
 }
@@ -91,7 +98,8 @@ $manifest = [ordered]@{
     Standard = $releaseData['Standard']
     Auto = $releaseData['Auto']
 }
-$manifestBytes = $utf8NoBom.GetBytes(($manifest | ConvertTo-Json -Depth 4) + [Environment]::NewLine)
+$manifestJson = ($manifest | ConvertTo-Json -Depth 4).Replace("`r`n", "`n").Replace("`r", "`n")
+$manifestBytes = $utf8NoBom.GetBytes($manifestJson + "`n")
 $protectedBytes = [IO.File]::ReadAllBytes($SigningKeyPath)
 $plainBytes = [Security.Cryptography.ProtectedData]::Unprotect(
     $protectedBytes, $entropy, [Security.Cryptography.DataProtectionScope]::CurrentUser)
@@ -150,7 +158,7 @@ try {
         Copy-Item -LiteralPath $output.Source -Destination $output.Destination -Force
     }
     [IO.File]::WriteAllBytes($manifestPath, $manifestBytes)
-    [IO.File]::WriteAllText($signaturePath, [Convert]::ToBase64String($signatureBytes) + [Environment]::NewLine, $utf8NoBom)
+    [IO.File]::WriteAllText($signaturePath, [Convert]::ToBase64String($signatureBytes) + "`n", $utf8NoBom)
     & (Join-Path $PSScriptRoot 'Test-UpdateSignature.ps1') -ManifestPath $manifestPath -SignaturePath $signaturePath -PublicKeyPath $publicKeyPath
     foreach ($output in $outputs) {
         if ((Get-FileHash -Algorithm SHA256 -LiteralPath $output.Source).Hash -ne
