@@ -1,0 +1,27 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 18
+VisualStudioVersion = 18.0.12021.73
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyGomiPinball", "MyGomiPinball\MyGomiPinball.csproj", "{C8C3B661-C8F9-4C31-B5EF-B94AB1241C5F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyGomiPinballAuto", "MyGomiPinballAuto\MyGomiPinballAuto.csproj", "{6AD5FF37-731D-44AE-99A4-645877613ECB}"
+EndProject
+Global
+    GlobalSection(SolutionConfigurationPlatforms) = preSolution
+        Debug|Any CPU = Debug|Any CPU
+        Release|Any CPU = Release|Any CPU
+    EndGlobalSection
+    GlobalSection(ProjectConfigurationPlatforms) = postSolution
+        {C8C3B661-C8F9-4C31-B5EF-B94AB1241C5F}.Debug|Any CPU.ActiveCfg = Debug|AnyCPU
+        {C8C3B661-C8F9-4C31-B5EF-B94AB1241C5F}.Debug|Any CPU.Build.0 = Debug|AnyCPU
+        {C8C3B661-C8F9-4C31-B5EF-B94AB1241C5F}.Release|Any CPU.ActiveCfg = Release|AnyCPU
+        {C8C3B661-C8F9-4C31-B5EF-B94AB1241C5F}.Release|Any CPU.Build.0 = Release|AnyCPU
+        {6AD5FF37-731D-44AE-99A4-645877613ECB}.Debug|Any CPU.ActiveCfg = Debug|AnyCPU
+        {6AD5FF37-731D-44AE-99A4-645877613ECB}.Debug|Any CPU.Build.0 = Debug|AnyCPU
+        {6AD5FF37-731D-44AE-99A4-645877613ECB}.Release|Any CPU.ActiveCfg = Release|AnyCPU
+        {6AD5FF37-731D-44AE-99A4-645877613ECB}.Release|Any CPU.Build.0 = Release|AnyCPU
+    EndGlobalSection
+    GlobalSection(SolutionProperties) = preSolution
+        HideSolutionNode = FALSE
+    EndGlobalSection
+EndGlobal
