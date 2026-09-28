@@ -1,8 +1,8 @@
-# 마이곰이 종겜핀볼
+# 곰이 종겜핀볼
 
 SOOP 라이브 채팅과 후원 내역에서 핀볼 추첨에 사용할 목록을 수집하는 Windows 프로그램입니다.
 
-**바로 다운로드:** [자동판](https://github.com/Gyeon-ai/MyGomiPinball/raw/refs/heads/main/MyGomiPinballAuto.exe) / [일반판](https://github.com/Gyeon-ai/MyGomiPinball/raw/refs/heads/main/MyGomiPinball.exe)
+**바로 다운로드:** [자동판](https://github.com/Gyeon-ai/MyGomiPinball/raw/refs/heads/main/%EA%B3%B0%EC%9D%B4%20%EC%A2%85%EA%B2%9C%ED%95%80%EB%B3%BC%20%EC%9E%90%EB%8F%99.exe) / [일반판](https://github.com/Gyeon-ai/MyGomiPinball/raw/refs/heads/main/%EA%B3%B0%EC%9D%B4%20%EC%A2%85%EA%B2%9C%ED%95%80%EB%B3%BC.exe)
 
 ## 일반판과 자동판
 
@@ -15,9 +15,14 @@ SOOP 라이브 채팅과 후원 내역에서 핀볼 추첨에 사용할 목록�
 2. 수집 대상(별풍선·애드벌룬·도전미션), 후원 개수 조건, 닉네임·채팅 내용 반영 방식을 선택합니다.
 3. 수집된 목록을 확인한 뒤 `핀볼 사이트 열기`를 누릅니다.
 
-마이곰이는 설정한 기준 수량 1회당 1코인입니다. 10회당 추가 코인은 없습니다. 현재 버전에는 자동 업데이트가 없으므로 새 버전이 나오면 위 링크에서 다시 내려받아 주세요.
+곰이 종겜핀볼은 설정한 기준 수량 1회당 1코인입니다. 10회당 추가 코인은 없습니다. 현재 버전에는 자동 업데이트가 없으므로 새 버전이 나오면 위 링크에서 다시 내려받아 주세요.
 
 ## 패치 내역
+
+### 1.0.0.9
+
+- 일반판과 자동판의 창·화면 이름을 `곰이 종겜핀볼`로 통일했습니다.
+- 다운로드 파일명도 새 이름으로 바꿨습니다. 수집·코인 규칙은 변경하지 않았습니다.
 
 ### 1.0.0.8
 

@@ -1,10 +1,10 @@
-{
-  "MyGomiPinball": {
-    "Version": "1.0.0.8",
-    "Number": 8
-  },
-  "MyGomiPinballAuto": {
-    "Version": "1.0.0.8",
-    "Number": 8
-  }
+﻿{
+    "MyGomiPinball":  {
+                          "Version":  "1.0.0.9",
+                          "Number":  9
+                      },
+    "MyGomiPinballAuto":  {
+                              "Version":  "1.0.0.9",
+                              "Number":  9
+                          }
 }

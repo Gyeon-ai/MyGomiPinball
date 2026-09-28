@@ -23,8 +23,12 @@ function Invoke-Form([string]$Name, [object[]]$Arguments) {
 }
 
 try {
+    $expectedTitle = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('6rOw7J20IOyiheqynO2VgOuzvA=='))
     Assert-Equal $ExpectedVersion $assembly.GetName().Version.ToString() 'Assembly version'
     Assert-Equal $ExpectedVersion ([Diagnostics.FileVersionInfo]::GetVersionInfo($ExePath).FileVersion) 'File version'
+    Assert-Equal $expectedTitle $form.Text 'Window title'
+    Assert-Equal $expectedTitle (Field '_appTitle').Text 'Visible program title'
+    Assert-Equal $expectedTitle ([Diagnostics.FileVersionInfo]::GetVersionInfo($ExePath).ProductName) 'Windows product name'
     Assert-Equal ([bool]$ExpectAuto) ($null -ne $assembly.GetType("$NamespaceName.PinballSiteInjector", $false)) 'General/Auto separation'
     $entries = Field '_entries'
     $pending = Field '_pending'

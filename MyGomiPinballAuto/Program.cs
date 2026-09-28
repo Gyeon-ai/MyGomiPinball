@@ -32,7 +32,7 @@ namespace MyGomiPinballAuto
                 Application.ThreadException += delegate(object sender, System.Threading.ThreadExceptionEventArgs e)
                 {
                     WriteCrashLog(e.Exception);
-                    MessageBox.Show(e.Exception.Message, "마이곰이 종겜핀볼 실행 오류", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(e.Exception.Message, "곰이 종겜핀볼 실행 오류", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 };
                 AppDomain.CurrentDomain.UnhandledException += delegate(object sender, UnhandledExceptionEventArgs e)
                 {
@@ -44,7 +44,7 @@ namespace MyGomiPinballAuto
             catch (Exception ex)
             {
                 WriteCrashLog(ex);
-                MessageBox.Show(ex.Message, "마이곰이 종겜핀볼 실행 오류", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(ex.Message, "곰이 종겜핀볼 실행 오류", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -209,7 +209,7 @@ namespace MyGomiPinballAuto
 
         public MainForm()
         {
-            Text = "마이곰이 종겜핀볼";
+            Text = "곰이 종겜핀볼";
             ClientSize = new Size(1093, 688);
             MinimumSize = new Size(720, 680);
             StartPosition = FormStartPosition.CenterScreen;
@@ -335,7 +335,7 @@ namespace MyGomiPinballAuto
             _logo.BorderColor = Color.Transparent;
             _surface.Controls.Add(_logo);
 
-            _appTitle = PlainLabel("마이곰이 종겜핀볼", 17.0f, FontStyle.Bold, _text);
+            _appTitle = PlainLabel("곰이 종겜핀볼", 17.0f, FontStyle.Bold, _text);
             _appTitle.ForeColor = _text;
             _appTitle.TextAlign = ContentAlignment.MiddleLeft;
             _surface.Controls.Add(_appTitle);
@@ -2295,7 +2295,7 @@ namespace MyGomiPinballAuto
         private void SeedPreviewRows()
         {
             _entries.Add(new CollectedEntry { Source = GiftSource.StarBalloon, Nickname = "테스트", BalloonCount = 100, CoinCount = 1, PinballName = "테스트", ReceivedAt = DateTime.Now.ToString("HH:mm:ss") });
-            _entries.Add(new CollectedEntry { Source = GiftSource.AdBalloon, Nickname = "마이곰이", BalloonCount = 1017, CoinCount = 10, PinballName = "마이곰이 종겜핀볼", ReceivedAt = DateTime.Now.ToString("HH:mm:ss") });
+            _entries.Add(new CollectedEntry { Source = GiftSource.AdBalloon, Nickname = "마이곰이", BalloonCount = 1017, CoinCount = 10, PinballName = "곰이 종겜핀볼", ReceivedAt = DateTime.Now.ToString("HH:mm:ss") });
             _entries.Add(new CollectedEntry { Source = GiftSource.ChallengeGift, Nickname = "시소즈", BalloonCount = 200, CoinCount = 2, PinballName = "테스트2", ReceivedAt = DateTime.Now.ToString("HH:mm:ss") });
             RefreshPinballText();
         }
