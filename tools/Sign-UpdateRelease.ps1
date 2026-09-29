@@ -28,7 +28,8 @@ $projects = @(
     [pscustomobject]@{
         Name = 'MyGomiPinballAuto'
         Key = 'Auto'
-        KoreanName = "$displayBase $([char]0xC790)$([char]0xB3D9).exe"
+        KoreanName = "$($displayBase)($([char]0xC790)$([char]0xB3D9)).exe"
+        LegacyKoreanName = "$displayBase $([char]0xC790)$([char]0xB3D9).exe"
     }
 )
 
@@ -75,6 +76,9 @@ foreach ($project in $projects) {
         Size = (Get-Item -LiteralPath $numberedExe).Length
     }
     $outputs.Add([pscustomobject]@{ Source = $numberedExe; Destination = (Join-Path $root $project.KoreanName) })
+    if (![String]::IsNullOrWhiteSpace($project.LegacyKoreanName)) {
+        $outputs.Add([pscustomobject]@{ Source = $numberedExe; Destination = (Join-Path $root $project.LegacyKoreanName) })
+    }
     $outputs.Add([pscustomobject]@{ Source = $numberedExe; Destination = (Join-Path $root ($project.Name + '.exe')) })
 }
 

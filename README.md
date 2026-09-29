@@ -2,7 +2,7 @@
 
 SOOP 라이브 채팅과 후원 내역에서 핀볼 추첨에 사용할 목록을 수집하는 Windows 프로그램입니다.
 
-**바로 다운로드:** [자동판](https://github.com/Gyeon-ai/MyGomiPinball/raw/refs/heads/main/%EA%B3%B0%EC%9D%B4%20%EC%A2%85%EA%B2%9C%ED%95%80%EB%B3%BC%20%EC%9E%90%EB%8F%99.exe) / [일반판](https://github.com/Gyeon-ai/MyGomiPinball/raw/refs/heads/main/%EA%B3%B0%EC%9D%B4%20%EC%A2%85%EA%B2%9C%ED%95%80%EB%B3%BC.exe)
+**바로 다운로드:** [자동판](https://github.com/Gyeon-ai/MyGomiPinball/raw/refs/heads/main/%EA%B3%B0%EC%9D%B4%20%EC%A2%85%EA%B2%9C%ED%95%80%EB%B3%BC%28%EC%9E%90%EB%8F%99%29.exe) / [일반판](https://github.com/Gyeon-ai/MyGomiPinball/raw/refs/heads/main/%EA%B3%B0%EC%9D%B4%20%EC%A2%85%EA%B2%9C%ED%95%80%EB%B3%BC.exe)
 
 ## 일반판과 자동판
 
@@ -20,6 +20,12 @@ SOOP 라이브 채팅과 후원 내역에서 핀볼 추첨에 사용할 목록�
 새 버전이 있으면 프로그램 실행 시 `업데이트` 또는 `나중에`를 선택할 수 있습니다. `1.0.0.9` 이하에는 업데이트 기능이 없으므로 위 링크에서 새 EXE를 한 번 직접 받아야 합니다. 이후에는 같은 파일이 자동으로 교체됩니다.
 
 ## 패치 내역
+
+### 1.0.1.1
+
+- 기존 `곰이 종겜핀볼` 로고를 일반판·자동판의 실행 아이콘에 적용했습니다.
+- 자동판 다운로드 파일 이름을 `곰이 종겜핀볼(자동).exe`로 바꿨습니다. 이전 다운로드 링크도 유지합니다.
+- 이미 받은 EXE의 파일명을 바꾸어도 다음 업데이트에서 해당 파일을 교체합니다. 화면 문구와 수집·코인 규칙은 그대로입니다.
 
 ### 1.0.1.0
 

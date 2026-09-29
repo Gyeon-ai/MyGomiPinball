@@ -1,6 +1,8 @@
 param(
     [Parameter(Mandatory = $true)]
-    [string]$RepositoryRoot
+    [string]$RepositoryRoot,
+
+    [switch]$UseRenamedTarget
 )
 
 $ErrorActionPreference = 'Stop'
@@ -27,26 +29,34 @@ function Get-ProcessByExecutablePath([string]$ExecutablePath) {
 
 $root = (Resolve-Path -LiteralPath $RepositoryRoot).Path
 $auditRoot = Join-Path ([IO.Path]::GetTempPath()) 'MyGomiPinballUpdaterE2E'
+$displayBase = -join @([char]0xACF0, [char]0xC774, [char]0x0020, [char]0xC885, [char]0xAC9C, [char]0xD540, [char]0xBCFC)
 New-Item -ItemType Directory -Force -Path $auditRoot | Out-Null
 $products = @(
     [pscustomobject]@{
         Name = 'standard'
         AssemblyName = 'MyGomiPinball'
         BuildExe = Join-Path $root 'build\Release\MyGomiPinball\MyGomiPinball.exe'
-        CurrentExe = Join-Path $root 'dist\Release\MyGomiPinball\MyGomiPinball-009.exe'
+        CurrentExe = Join-Path $root 'dist\Release\MyGomiPinball\MyGomiPinball-010.exe'
     },
     [pscustomobject]@{
         Name = 'auto'
         AssemblyName = 'MyGomiPinballAuto'
         BuildExe = Join-Path $root 'build\Release\MyGomiPinballAuto\MyGomiPinballAuto.exe'
-        CurrentExe = Join-Path $root 'dist\Release\MyGomiPinballAuto\MyGomiPinballAuto-009.exe'
+        CurrentExe = Join-Path $root 'dist\Release\MyGomiPinballAuto\MyGomiPinballAuto-010.exe'
     }
 )
 
 foreach ($product in $products) {
     $testDirectory = Join-Path $auditRoot ('apply-e2e-' + $product.Name + '-' + [Guid]::NewGuid().ToString('N'))
     New-Item -ItemType Directory -Path $testDirectory | Out-Null
-    $targetPath = Join-Path $testDirectory ($product.AssemblyName + '.exe')
+    $targetFileName = if ($UseRenamedTarget) {
+        if ($product.Name -eq 'auto') { "$($displayBase)($([char]0xC790)$([char]0xB3D9)).exe" }
+        else { "$displayBase-renamed.exe" }
+    }
+    else {
+        $product.AssemblyName + '.exe'
+    }
+    $targetPath = Join-Path $testDirectory $targetFileName
     $updaterPath = Join-Path $testDirectory ('downloaded-' + $product.AssemblyName + '.exe')
     $targetProcess = $null
     $updaterProcess = $null
