@@ -9,9 +9,6 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-if ($PSVersionTable.PSEdition -ne 'Desktop') {
-    throw 'Run update signing with Windows PowerShell 5.1 (powershell.exe), not pwsh.'
-}
 Add-Type -AssemblyName System.Security
 
 $root = Split-Path -Parent $PSScriptRoot
@@ -101,7 +98,8 @@ $manifest = [ordered]@{
     Standard = $releaseData['Standard']
     Auto = $releaseData['Auto']
 }
-$manifestJson = ($manifest | ConvertTo-Json -Depth 4).Replace("`r`n", "`n").Replace("`r", "`n")
+# Compact JSON keeps the signed bytes independent of PowerShell's indentation style.
+$manifestJson = ($manifest | ConvertTo-Json -Depth 4 -Compress).Replace("`r`n", "`n").Replace("`r", "`n")
 $manifestBytes = $utf8NoBom.GetBytes($manifestJson + "`n")
 $protectedBytes = [IO.File]::ReadAllBytes($SigningKeyPath)
 $plainBytes = [Security.Cryptography.ProtectedData]::Unprotect(
