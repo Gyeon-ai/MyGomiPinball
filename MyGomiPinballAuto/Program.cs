@@ -48,6 +48,7 @@ namespace MyGomiPinballAuto
                 {
                     SelfUpdater.SignalSuccessfulStartup(args);
                     SelfUpdater.BeginUpdateCheck(mainForm, UpdateProduct.Auto);
+                    PinballSiteInjector.CleanupLeftoverBrowserProfiles();
                 };
                 Application.Run(mainForm);
             }
@@ -2888,20 +2889,26 @@ namespace MyGomiPinballAuto
         private static async Task<InjectionResult> TryOpenAndInjectAsync(string browserPath, string url, string names, long expectedCoins)
         {
             int port = ReserveLoopbackPort();
-            string profileDir = Path.Combine(Path.GetTempPath(), "MyGomiPinballBrowser-" + port.ToString());
+            string profileDir = Path.Combine(Path.GetTempPath(), BrowserProfilePrefix + port.ToString());
             Directory.CreateDirectory(profileDir);
 
             string args = "--remote-debugging-port=" + port.ToString() +
                           " --user-data-dir=\"" + profileDir + "\"" +
                           " --no-first-run --no-default-browser-check --new-window \"" + url + "\"";
+            Process browser;
             try
             {
-                Process.Start(new ProcessStartInfo(browserPath, args) { UseShellExecute = false });
+                browser = Process.Start(new ProcessStartInfo(browserPath, args) { UseShellExecute = false });
             }
             catch
             {
+                // 브라우저를 띄우지 못했으면 방금 만든 빈 프로필 폴더를 바로 지운다.
+                DeleteBrowserProfileInBackground(profileDir);
                 return new InjectionResult(false, false, false);
             }
+
+            // 입력이 끝나도 사용자는 이 창에서 핀볼을 계속 쓴다. 그래서 브라우저가 완전히 꺼진 뒤에 프로필 폴더를 지운다.
+            DeleteBrowserProfileWhenExited(browser, profileDir);
 
             string wsUrl = await WaitForWebSocketDebuggerUrlAsync(port, url);
             if (wsUrl.Length == 0)
@@ -2962,6 +2969,175 @@ namespace MyGomiPinballAuto
             }
 
             return new InjectionResult(true, true, false);
+        }
+
+        private const string BrowserProfilePrefix = "MyGomiPinballBrowser-";
+
+        private static void DeleteBrowserProfileWhenExited(Process browser, string profileDir)
+        {
+            if (browser == null)
+            {
+                return;
+            }
+
+            int handled = 0;
+            EventHandler onExited = null;
+            onExited = delegate
+            {
+                if (Interlocked.Exchange(ref handled, 1) != 0)
+                {
+                    return;
+                }
+
+                try
+                {
+                    browser.Exited -= onExited;
+                    browser.Dispose();
+                }
+                catch
+                {
+                }
+
+                DeleteBrowserProfileInBackground(profileDir);
+            };
+
+            try
+            {
+                browser.EnableRaisingEvents = true;
+                browser.Exited += onExited;
+                if (browser.HasExited)
+                {
+                    onExited(browser, EventArgs.Empty);
+                }
+            }
+            catch
+            {
+                // 종료를 지켜볼 수 없으면 지우지 않는다. 실행 중인 브라우저의 프로필을 지우면 그 창이 망가질 수 있다.
+            }
+        }
+
+        private static void DeleteBrowserProfileInBackground(string profileDir)
+        {
+            Task.Run(async () =>
+            {
+                // 브라우저 본체가 끝난 뒤에도 하위 프로세스가 잠깐 파일을 잡고 있을 수 있어 약 1분 동안 다시 시도한다.
+                for (int attempt = 0; attempt < 40; attempt++)
+                {
+                    try
+                    {
+                        if (!IsOwnBrowserProfile(profileDir) || !Directory.Exists(profileDir))
+                        {
+                            return;
+                        }
+
+                        // 브라우저가 아직 이 프로필을 쓰고 있으면(잠금 파일이 잠겨 있으면) 지우지 않고 다음 시도까지 기다린다.
+                        if (!IsBrowserProfileInUse(profileDir))
+                        {
+                            if (attempt > 0)
+                            {
+                                ClearReadOnlyAttributes(profileDir);
+                            }
+
+                            Directory.Delete(profileDir, true);
+                            return;
+                        }
+                    }
+                    catch
+                    {
+                    }
+
+                    await Task.Delay(attempt < 10 ? 500 : 2000);
+                }
+            });
+        }
+
+        private static bool IsOwnBrowserProfile(string profileDir)
+        {
+            string fullPath = Path.GetFullPath(profileDir).TrimEnd(Path.DirectorySeparatorChar);
+            string tempPath = Path.GetFullPath(Path.GetTempPath()).TrimEnd(Path.DirectorySeparatorChar);
+            return String.Equals(Path.GetDirectoryName(fullPath), tempPath, StringComparison.OrdinalIgnoreCase) &&
+                   Path.GetFileName(fullPath).StartsWith(BrowserProfilePrefix, StringComparison.Ordinal);
+        }
+
+        public static void CleanupLeftoverBrowserProfiles()
+        {
+            // 예전 실행에서 남은 이 제품의 브라우저 프로필 폴더를 뒤에서 조용히 정리한다.
+            Task.Run(() =>
+            {
+                try
+                {
+                    string pattern = "^" + Regex.Escape(BrowserProfilePrefix) + "[0-9]{1,5}$";
+                    foreach (string directory in Directory.GetDirectories(Path.GetTempPath(), BrowserProfilePrefix + "*"))
+                    {
+                        try
+                        {
+                            if (!Regex.IsMatch(Path.GetFileName(directory), pattern) || !IsOwnBrowserProfile(directory))
+                            {
+                                continue;
+                            }
+
+                            // 쓰는 중인 브라우저가 있거나, 방금 다른 실행이 만든 폴더일 수 있으면 건너뛴다.
+                            if (IsBrowserProfileInUse(directory) ||
+                                DateTime.UtcNow - Directory.GetLastWriteTimeUtc(directory) < TimeSpan.FromMinutes(2))
+                            {
+                                continue;
+                            }
+
+                            try
+                            {
+                                Directory.Delete(directory, true);
+                            }
+                            catch
+                            {
+                                ClearReadOnlyAttributes(directory);
+                                Directory.Delete(directory, true);
+                            }
+                        }
+                        catch
+                        {
+                        }
+                    }
+                }
+                catch
+                {
+                }
+            });
+        }
+
+        private static bool IsBrowserProfileInUse(string profileDir)
+        {
+            string lockPath = Path.Combine(profileDir, "lockfile");
+            if (!File.Exists(lockPath))
+            {
+                return false;
+            }
+
+            try
+            {
+                using (new FileStream(lockPath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+                {
+                }
+
+                return false;
+            }
+            catch
+            {
+                return true;
+            }
+        }
+
+        private static void ClearReadOnlyAttributes(string directory)
+        {
+            foreach (string file in Directory.GetFiles(directory, "*", SearchOption.AllDirectories))
+            {
+                try
+                {
+                    File.SetAttributes(file, FileAttributes.Normal);
+                }
+                catch
+                {
+                }
+            }
         }
 
         private static IEnumerable<string> FindPreferredBrowserCandidates()
